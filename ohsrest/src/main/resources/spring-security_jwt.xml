@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<global-method-security secured-annotations="enabled" />
+
+	<http pattern="/auth" security="none" />
+
+	<http create-session="stateless" entry-point-ref="unauthorizedHandler">
+		<csrf disabled="true" />
+		<custom-filter before="FORM_LOGIN_FILTER" ref="jwtAuthenticationFilter" />
+		<intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
+		<headers>
+			<cache-control disabled="true" />
+		</headers>
+	</http>
+
+	<beans:bean id="jwtAuthenticationFilter" class="com.dc.server.ohsrest.jwtsecurity.JwtAuthenticationTokenFilter">
+	</beans:bean>
+
+	<authentication-manager alias="authenticationManager">
+		<authentication-provider user-service-ref="userDetailService">
+			<password-encoder ref="encoder" />
+		</authentication-provider>
+	</authentication-manager>
+
+	<beans:bean id="encoder"
+		class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+
+	<beans:bean id="unauthorizedHandler"
+		class="com.dc.server.ohsrest.jwtsecurity.JwtAuthenticationEntryPoint" />
+
+	<beans:bean id="userDetailService"
+		class="com.dc.server.ohrest.jwtsecurityImpl.JwtUserDetailsServiceImpl" />
+
+
+</beans:beans>

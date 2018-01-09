@@ -1,0 +1,42 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/security
+		http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		">
+
+	<!-- lets first load properties file. -->
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>classpath:/ohs.properties</value>
+		</property>
+	</bean>
+	
+	<!-- Initialization for data source. -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="initialPoolSize">
+			<value>8</value>
+		</property>
+	</bean>
+	
+	<!-- Initialize services -->
+	<bean id="ehsHelper" class="com.dc.server.ohsrest.helper.EhsHelper" />
+	<bean id="obsCRUDService" class="com.dc.server.ohsrest.service.ObsCRUDServiceImpl" />
+	<bean id="obsCRUDdao" class="com.dc.server.ohsrest.dao.ObsCRUDDaoImpl" />
+	<bean id="userDao" class="com.dc.server.ohsrest.dao.UserDaoImpl" />
+</beans>
